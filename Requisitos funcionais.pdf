@@ -1,0 +1,122 @@
+# 📋 REQUISITOS DO SISTEMA — NUTRICIONISTA
+
+---
+
+## 🔐 AUTENTICAÇÃO
+
+- **RF01** – O sistema deve permitir que o nutricionista realize login utilizando e-mail e senha.
+- **RF02** – O sistema deve validar credenciais antes de permitir acesso às funcionalidades.
+- **RF03** – O sistema deve gerar e validar sessão autenticada (JWT ou session).
+- **RF04** – O sistema deve permitir logout, encerrando a sessão do usuário.
+
+---
+
+## 🧑‍⚕️ DASHBOARD
+
+- **RF05** – O sistema deve exibir um painel com indicadores gerais.
+- **RF06** – O sistema deve mostrar o total de pacientes cadastrados.
+- **RF07** – O sistema deve mostrar a quantidade de pacientes ativos e inativos.
+- **RF08** – O sistema deve exibir consultas próximas quando existirem.
+- **RF09** – O sistema deve permitir navegação rápida para outras áreas do sistema.
+
+---
+
+## 👥 PACIENTES (CRUD PRINCIPAL)
+
+- **RF10** – O sistema deve permitir cadastrar pacientes com dados pessoais e clínicos.
+- **RF11** – O sistema deve listar todos os pacientes em uma tabela principal.
+- **RF12** – O sistema deve permitir visualizar detalhes completos de um paciente.
+- **RF13** – O sistema deve permitir editar dados do paciente.
+- **RF14** – O sistema deve permitir exclusão lógica (soft delete), alterando status para “inativo”.
+- **RF15** – O sistema deve permitir atualização de peso, altura, objetivo, telefone, observação e status.
+
+---
+
+## 📈 EVOLUÇÃO DO PACIENTE
+
+- **RF16** – O sistema deve permitir registrar evolução do paciente (peso e dados corporais).
+- **RF17** – O sistema deve listar histórico de evolução por paciente.
+- **RF18** – O sistema deve exibir evolução em formato de lista ou gráfico.
+
+---
+
+## 📅 CONSULTAS
+
+- **RF19** – O sistema deve permitir agendar consultas vinculadas a um paciente.
+- **RF20** – O sistema deve listar todas as consultas.
+- **RF21** – O sistema deve permitir atualizar status da consulta (agendada, realizada ou cancelada).
+
+---
+
+## 🥗 PLANOS ALIMENTARES
+
+- **RF22** – O sistema deve permitir criar planos alimentares para pacientes.
+- **RF23** – O sistema deve permitir listar planos alimentares por paciente.
+- **RF24** – O sistema deve permitir adicionar refeições a um plano alimentar.
+- **RF25** – O sistema deve categorizar refeições por tipo (café, almoço, jantar, lanche).
+
+---
+
+## 🗃️ USUÁRIO DO SISTEMA
+
+- **RF26** – O sistema deve permitir criação de usuário nutricionista.
+- **RF27** – O sistema deve armazenar senha de forma criptografada (hash).
+
+---
+
+# ⚙️ REQUISITOS NÃO FUNCIONAIS (RNF)
+
+---
+
+## 🔒 SEGURANÇA
+
+- **RNF01** – As senhas devem ser armazenadas utilizando hash seguro (ex: bcrypt).
+- **RNF02** – O sistema deve proteger rotas privadas com autenticação (JWT ou session).
+- **RNF03** – O sistema deve impedir acesso não autorizado às rotas de CRUD.
+
+---
+
+## ⚡ PERFORMANCE
+
+- **RNF04** – O sistema deve responder requisições de API em tempo aceitável (até ~300ms em ambiente local).
+- **RNF05** – A listagem de pacientes deve suportar crescimento de dados sem perda significativa de desempenho.
+
+---
+
+## 🎨 USABILIDADE / INTERFACE
+
+- **RNF06** – A interface deve utilizar design moderno com glassmorphism.
+- **RNF07** – O sistema deve possuir modo claro e modo escuro.
+- **RNF08** – A interface deve ser responsiva (desktop e mobile).
+- **RNF09** – O sistema deve ser intuitivo, permitindo uso sem treinamento prévio.
+
+---
+
+## 🧱 ARQUITETURA / MANUTENIBILIDADE
+
+- **RNF10** – O sistema deve seguir arquitetura REST na API.
+- **RNF11** – O sistema deve separar frontend e backend em projetos distintos.
+- **RNF12** – O código deve ser organizado em camadas (controller, service, repository ou equivalente).
+- **RNF13** – O banco de dados deve estar normalizado com relacionamentos bem definidos.
+
+---
+
+## 🗄️ BANCO DE DADOS
+
+- **RNF14** – O sistema deve utilizar banco relacional (ex: MySQL ou PostgreSQL).
+- **RNF15** – O banco deve garantir integridade referencial com chaves estrangeiras.
+
+---
+
+## 🔄 CONFIABILIDADE
+
+- **RNF16** – O sistema deve evitar perda de dados em operações críticas (uso de transações quando necessário).
+- **RNF17** – O sistema deve tratar erros de API de forma padronizada.
+
+---
+
+## 📦 ENTREGA / ORGANIZAÇÃO
+
+- **RNF18** – O projeto deve estar organizado em pastas `backend`, `frontend` e `database`.
+- **RNF19** – O sistema deve conter documentação (README explicando execução).
+- **RNF20** – O sistema deve conter script SQL para criação do banco.

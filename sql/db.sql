@@ -1,0 +1,3 @@
+CREATE DATABASE gestao_nutricionismo;
+
+USE gestao_nutricionismo
