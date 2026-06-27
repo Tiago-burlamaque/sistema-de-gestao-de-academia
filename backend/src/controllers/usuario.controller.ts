@@ -86,7 +86,7 @@ export const login = async (req: Request, res: Response) => {
             throw new Error("JWT_SECRET não definido.")
         }
 
-        const token = jwt.sign({ id: usuario.id }, secret, { expiresIn: '1d' })
+        const token = jwt.sign({ id: usuario.id, nome: usuario.nome, email: usuario.email }, secret, { expiresIn: '1d' })
 
         return res.status(200).json({
             message: "Login efetuado com sucesso.",
