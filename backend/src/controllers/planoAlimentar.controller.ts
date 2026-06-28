@@ -112,6 +112,9 @@ export const categorizarTipoRefeicao = async (req: Request, res: Response) => {
             refeicoes
         })
     } catch (error) {
-        
+        console.log(error)
+        return res.status(500).json({
+            message: "Erro interno no servidor."
+        })
     }
 }
