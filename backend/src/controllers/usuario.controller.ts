@@ -56,28 +56,35 @@ export const cadastro = async (
     }
 }
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+    req: Request,
+    res: Response
+) => {
     try {
         const { email, senha } = req.body as Usuario
-
+        
+        
         if (!email || !senha) {
             return res.status(400).json({ message: "Os campos são obrigatórios." })
         }
-
+        
         const usuario = await prisma.usuario.findUnique({
             where: { email }
         })
 
         if (!usuario) {
-            return res.status(404).json({ message: "Usuário não cadastrado." })
+            return res.status(404).json({
+                message: "Usuário não cadastrado."
+            })
         }
 
         const senhaValida = await bcrypt.compare(senha, usuario.senha)
 
-        console.log(senhaValida)
 
         if (!senhaValida) {
-            return res.status(401).json({ message: "E-mail ou senha incorretos." })
+            return res.status(401).json({
+                message: "E-mail ou senha incorretos."
+            })
         }
 
         const secret = process.env.JWT_SECRET
@@ -86,7 +93,13 @@ export const login = async (req: Request, res: Response) => {
             throw new Error("JWT_SECRET não definido.")
         }
 
-        const token = jwt.sign({ id: usuario.id, nome: usuario.nome, email: usuario.email }, secret, { expiresIn: '1d' })
+        const token = jwt.sign({
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email
+        }, secret, {
+            expiresIn: '1d'
+        })
 
         return res.status(200).json({
             message: "Login efetuado com sucesso.",

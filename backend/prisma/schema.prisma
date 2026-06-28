@@ -21,8 +21,8 @@ model Paciente {
   id             Int              @id @default(autoincrement())
   nome           String
   telefone       String
-  email          String?          @unique
-  dataNascimento DateTime         @map("data_nascimento")
+  email          String           @unique
+  dataNascimento String           @map("data_nascimento")
   pesoAtual      Float            @map("peso_atual")
   altura         Float
   objetivo       ObjetivoPaciente
