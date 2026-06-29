@@ -1,120 +1,126 @@
-import {
-    Request,
-    Response
-} from 'express'
-import { prisma } from '../../lib/prisma'
-import { TipoRefeicao } from '../../generated/prisma/enums'
+import { Request, Response } from 'express'
+import { PrismaClient } from '@prisma/client'
 
-interface PlanoAlimentar {
-    pacienteId: number
-    nomePlano: string
-    caloriasDiarias: number
-    objetivo: string
-    observacao: string
+const prisma = new PrismaClient()
+
+type ObjetivoPaciente = 'EMAGRECIMENTO' | 'HIPERTROFIA' | 'SAUDE'
+type StatusPaciente = 'ATIVO' | 'INATIVO'
+
+interface PacienteInput {
+    nome: string
+    telefone: string
+    email: string
+    dataNascimento: string
+    pesoAtual: number
+    altura: number
+    objetivo: ObjetivoPaciente
+    observacao?: string
 }
 
-interface Refeicao {
-    planoId: number
-    tipo: TipoRefeicao
-    descricao: string
-}
-
-export const criarPlanoAlimentar = async (req: Request, res: Response) => {
+export const cadastrarPaciente = async (req: Request, res: Response) => {
     try {
-        const { pacienteId, nomePlano, caloriasDiarias, objetivo, observacao } = req.body as PlanoAlimentar
+        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao } = req.body as PacienteInput
 
-        const planoAlimentar = await prisma.planoAlimentar.findMany()
+        if (!nome || !telefone || !email || !dataNascimento || !pesoAtual || !altura || !objetivo) {
+            return res.status(400).json({})
+        }
 
-        if (planoAlimentar.length === 0) return res.status(404).json({
-            message: "nenhum plano alimentar encontrado."
+        const pacienteExistente = await prisma.paciente.findUnique({
+            where: { email }
         })
 
-        await prisma.planoAlimentar.create({
+        if (pacienteExistente) return res.status(409).json({})
+
+        const pacienteCriado = await prisma.paciente.create({
             data: {
-                caloriasDiarias,
-                objetivo,
-                nomePlano,
-                observacao,
-                pacienteId
+                nome,
+                email,
+                telefone,
+                dataNascimento,
+                pesoAtual: Number(pesoAtual),
+                altura: Number(altura),
+                objetivo: objetivo as any,
+                observacao: observacao || "",
+                status: 'ATIVO' as any
             }
         })
 
-        return res.status(201).json({
-            message: "Plano criado com sucesso."
-        })
+        return res.status(201).json({ paciente: pacienteCriado })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor."
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-export const listarPlanos = async (req: Request, res: Response) => {
+export const consultarTodosPacientes = async (req: Request, res: Response) => {
     try {
-        const consulta = await prisma.planoAlimentar.findMany({
-            orderBy: {
-                pacienteId: "asc"
-            }
-        })
-
-        if (consulta.length === 0) return res.status(404).json({
-            message: "Nenhum plano registrado."
-        })
-
-        return res.status(200).json({
-            consulta
-        })
+        const pacientes = await prisma.paciente.findMany()
+        if (pacientes.length === 0) return res.status(404).json({})
+        return res.status(200).json({ pacientes })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "erro interno servidor."
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-export const adicionarRefeicao = async (req: Request, res: Response) => {
+export const constultarPorId = async (req: Request, res: Response) => {
     try {
-        const { planoId, tipo, descricao } = req.body as Refeicao
+        const id = Number(req.params.id)
+        if (isNaN(id)) return res.status(400).json({})
 
-        if (!planoId || !tipo) return res.status(400).json({
-            message: "campos planoId e tipo são obrigatórios."
-        })
+        const paciente = await prisma.paciente.findUnique({ where: { id } })
+        if (!paciente) return res.status(404).json({})
 
-        await prisma.refeicao.create({
-            data: {
-                planoId,
-                descricao,
-                tipo
-            }
-        })
-
-        return res.status(201).json({
-            message: "refeição criada."
-        })
+        return res.status(200).json({ paciente })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor."
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-export const categorizarTipoRefeicao = async (req: Request, res: Response) => {
+export const editarPaciente = async (req: Request, res: Response) => {
     try {
-        const refeicoes = await prisma.refeicao.findMany({
-            orderBy: {
-                tipo: "asc"
-            }
+        const id = Number(req.params.id)
+        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao } = req.body as PacienteInput
+
+        if (isNaN(id)) return res.status(400).json({})
+
+        const dadosAtualizacao: any = {
+            nome,
+            email,
+            telefone,
+            dataNascimento,
+            pesoAtual: pesoAtual ? Number(pesoAtual) : undefined,
+            altura: altura ? Number(altura) : undefined,
+            objetivo,
+            observacao
+        }
+
+        const edit = await prisma.paciente.update({
+            where: { id },
+            data: dadosAtualizacao
         })
-    
-        return res.status(200).json({
-            refeicoes
-        })
+
+        return res.status(200).json({ paciente: edit })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor."
+        console.error(error)
+        return res.status(500).json({})
+    }
+}
+
+export const inativarPaciente = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id)
+        if (isNaN(id)) return res.status(400).json({})
+
+        await prisma.paciente.update({
+            where: { id },
+            data: { status: 'INATIVO' as any }
         })
+
+        return res.status(200).json({})
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({})
     }
 }

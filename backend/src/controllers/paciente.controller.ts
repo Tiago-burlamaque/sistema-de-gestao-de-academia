@@ -1,46 +1,34 @@
-// Importa bibliotecas
-import {
-    Request,
-    Response
-} from 'express'
-import { ObjetivoPaciente, StatusPaciente } from '../../generated/prisma/enums'
-import { prisma } from '../../lib/prisma'
+import { Request, Response } from 'express'
+import { PrismaClient } from '@prisma/client'
 
-// Tipa o paciente
-interface Paciente {
-    id: number
+const prisma = new PrismaClient()
+
+interface PacienteInput {
     nome: string
     telefone: string
     email: string
     dataNascimento: string
     pesoAtual: number
     altura: number
-    objetivo: ObjetivoPaciente
-    observacao: string
-    status: StatusPaciente
+    objetivo: any
+    observacao?: string
 }
 
-// Cadastra o paciente
-export const cadastrarPaciente = async (
-    req: Request,
-    res: Response
-) => {
+export const cadastrarPaciente = async (req: Request, res: Response) => {
     try {
-        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao, status } = req.body as Paciente
+        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao } = req.body as PacienteInput
 
-        if (!nome || !telefone || !email || !dataNascimento || !pesoAtual || !altura || !objetivo || !status) return res.status(400).json({
-            message: "apenas o campo observação é opcional."
+        if (!nome || !telefone || !email || !dataNascimento || !pesoAtual || !altura || !objetivo) {
+            return res.status(400).json({})
+        }
+
+        const pacienteExistente = await prisma.paciente.findUnique({
+            where: { email }
         })
 
-        const paciente = await prisma.paciente.findUnique({
-            where: {
-                email
-            }
-        })
-
-        if (paciente) return res.status(409).json({
-            message: "Paciente já cadastrado."
-        })
+        if (pacienteExistente) {
+            return res.status(409).json({})
+        }
 
         const pacienteCriado = await prisma.paciente.create({
             data: {
@@ -48,137 +36,103 @@ export const cadastrarPaciente = async (
                 email,
                 telefone,
                 dataNascimento,
-                pesoAtual,
-                altura,
+                pesoAtual: Number(pesoAtual),
+                altura: Number(altura),
                 objetivo,
-                observacao,
-                status: "ATIVO"
+                observacao: observacao || "",
+                status: "ATIVO" as any
             }
         })
 
-        return res.status(201).json({
-            message: "Paciente criado com sucesso.", pacienteCriado
-        })
+        return res.status(201).json({ paciente: pacienteCriado })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor.", error
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-// Consulta todoso os pacientes
-export const consultarTodosPacientes = async (
-    req: Request,
-    res: Response
-) => {
+export const consultarTodosPacientes = async (req: Request, res: Response) => {
     try {
         const pacientes = await prisma.paciente.findMany()
 
-        if (!pacientes) return res.status(404).json({
-            message: "Nenhum paciente encontrado."
-        })
+        if (pacientes.length === 0) {
+            return res.status(404).json({})
+        }
 
-        return res.status(200).json({
-            pacientes
-        })
+        return res.status(200).json({ pacientes })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor.", error
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-// Consulta apenas 1 paciente pelo id como parametro
-export const constultarPorId = async (
-    req: Request,
-    res: Response
-) => {
-    try {
-        const id = Number(req.user.id)
-
-        const pacienteId = await prisma.paciente.findUnique({
-            where: {
-                id
-            }
-        })
-
-        if (!pacienteId) return res.status(404).json({
-            message: "paciente não encotrado."
-        })
-
-        return res.status(200).json({
-            pacienteId
-        })
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor.", error
-        })
-    }
-}
-
-// Edita o paciente pelo id do parametro
-export const editarPaciente = async (
-    req: Request,
-    res: Response
-) => {
+export const constultarPorId = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id)
-        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao } = req.body as Paciente
+
+        if (isNaN(id)) return res.status(400).json({})
+
+        const paciente = await prisma.paciente.findUnique({
+            where: { id }
+        })
+
+        if (!paciente) {
+            return res.status(404).json({})
+        }
+
+        return res.status(200).json({ paciente })
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({})
+    }
+}
+
+export const editarPaciente = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id)
+        const { nome, telefone, email, dataNascimento, pesoAtual, altura, objetivo, observacao } = req.body as PacienteInput
+
+        if (isNaN(id)) return res.status(400).json({})
+
+        const dadosAtualizacao: any = {
+            nome,
+            email,
+            telefone,
+            dataNascimento,
+            pesoAtual: pesoAtual ? Number(pesoAtual) : undefined,
+            altura: altura ? Number(altura) : undefined,
+            objetivo,
+            observacao
+        }
 
         const edit = await prisma.paciente.update({
-            where: {
-                id
-            },
-            data: {
-                nome,
-                email,
-                telefone,
-                dataNascimento,
-                pesoAtual,
-                altura,
-                objetivo,
-                observacao,
-            }
+            where: { id },
+            data: dadosAtualizacao
         })
 
-        return res.status(200).json({
-            message: "Dados do paciente atualizado.", edit
-        })
+        return res.status(200).json({ paciente: edit })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor.", error
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }
 
-// Inativa o paciente pelo id do parametro
-export const inativarPaciente = async (
-    req: Request,
-    res: Response
-) => {
+export const inativarPaciente = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id)
 
-        const inativar = await prisma.paciente.update({
-            where: {
-                id
-            },
-            data: {
-                status: "INATIVO"
+        if (isNaN(id)) return res.status(400).json({})
+
+        await prisma.paciente.update({
+            where: { id },
+            data: { 
+                status: "INATIVO" as any
             }
         })
 
-        return res.status(200).json({
-            message: "Paciente inativo."
-        })
+        return res.status(200).json({})
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Erro interno no servidor.", error
-        })
+        console.error(error)
+        return res.status(500).json({})
     }
 }

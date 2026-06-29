@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Usuario {
@@ -25,9 +25,9 @@ model Paciente {
   dataNascimento String           @map("data_nascimento")
   pesoAtual      Float            @map("peso_atual")
   altura         Float
-  objetivo       ObjetivoPaciente
+  objetivo       String
   observacao     String?
-  status         StatusPaciente   @default(ATIVO)
+  status         String           @default("ATIVO")
   createdAt      DateTime         @default(now()) @map("created_at")
 
   evolucoes Evolucao[]
@@ -52,10 +52,10 @@ model Evolucao {
 }
 
 model Consulta {
-  id         Int            @id @default(autoincrement())
-  pacienteId Int            @map("paciente_id")
+  id         Int      @id @default(autoincrement())
+  pacienteId Int      @map("paciente_id")
   data       DateTime
-  status     StatusConsulta @default(AGENDADA)
+  status     String   @default("AGENDADA")
   observacao String?
 
   paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
@@ -78,36 +78,12 @@ model PlanoAlimentar {
 }
 
 model Refeicao {
-  id        Int          @id @default(autoincrement())
-  planoId   Int          @map("plano_id")
-  tipo      TipoRefeicao
+  id        Int    @id @default(autoincrement())
+  planoId   Int    @map("plano_id")
+  tipo      String
   descricao String
 
   plano PlanoAlimentar @relation(fields: [planoId], references: [id], onDelete: Cascade)
 
   @@map("refeicao")
-}
-
-enum ObjetivoPaciente {
-  EMAGRECIMENTO
-  HIPERTROFIA
-  SAUDE
-}
-
-enum StatusPaciente {
-  ATIVO
-  INATIVO
-}
-
-enum StatusConsulta {
-  AGENDADA
-  REALIZADA
-  CANCELADA
-}
-
-enum TipoRefeicao {
-  CAFE_DA_MANHA
-  ALMOCO
-  JANTAR
-  LANCHE
 }
