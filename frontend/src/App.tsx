@@ -1,25 +1,27 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Cadastro from './pages/Cadastro';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import './App.css';
+import express from 'express'
+import cors from 'cors'
+import { usuarioRouter } from './routes/usuario.route'
+import { pacienteRouter } from './routes/paciente.route'
+import { evolucaoRouter } from './routes/evoluicao.route'
+import { consultaRouter } from './routes/consulta.route'
+import { planoAlimentarRouter } from './routes/planoAlimentar.route'
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/cadastro" replace />} />
-        <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="*" element={
-          <div className="flex min-h-screen items-center justify-center text-white bg-slate-900">
-            <h2 className="text-2xl poppins-bold">Página não encontrada</h2>
-          </div>
-        } />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const app = express()
 
-export default App;
+// Configuração corrigida com a adição explícita do PATCH
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}))
+
+app.use(express.json())
+
+app.use('/user', usuarioRouter)
+app.use('/paciente', pacienteRouter)
+app.use('/evolucao', evolucaoRouter)
+app.use('/consulta', consultaRouter)
+app.use('/plano-alimentar', planoAlimentarRouter)
+
+export { app }
