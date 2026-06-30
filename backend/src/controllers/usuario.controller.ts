@@ -1,12 +1,11 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import {prisma} from '../../lib/prisma'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const prisma = new PrismaClient()
 
 interface UsuarioInput {
     nome: string
@@ -22,11 +21,11 @@ export const cadastro = async (req: Request, res: Response) => {
             return res.status(400).json({})
         }
 
-        const usuarioExistente = await prisma.usuario.findUnique({
+        const usuarioExistente = await prisma.usuario.findMany({
             where: { email }
         })
 
-        if (usuarioExistente) {
+        if (usuarioExistente.length > 1) {
             return res.status(409).json({})
         }
 

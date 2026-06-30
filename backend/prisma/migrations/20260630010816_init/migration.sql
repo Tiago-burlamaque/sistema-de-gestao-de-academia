@@ -1,15 +1,3 @@
--- CreateEnum
-CREATE TYPE "ObjetivoPaciente" AS ENUM ('EMAGRECIMENTO', 'HIPERTROFIA', 'SAUDE');
-
--- CreateEnum
-CREATE TYPE "StatusPaciente" AS ENUM ('ATIVO', 'INATIVO');
-
--- CreateEnum
-CREATE TYPE "StatusConsulta" AS ENUM ('AGENDADA', 'REALIZADA', 'CANCELADA');
-
--- CreateEnum
-CREATE TYPE "TipoRefeicao" AS ENUM ('CAFE_DA_MANHA', 'ALMOCO', 'JANTAR', 'LANCHE');
-
 -- CreateTable
 CREATE TABLE "usuario" (
     "id" SERIAL NOT NULL,
@@ -26,13 +14,13 @@ CREATE TABLE "paciente" (
     "id" SERIAL NOT NULL,
     "nome" TEXT NOT NULL,
     "telefone" TEXT NOT NULL,
-    "email" TEXT,
-    "data_nascimento" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
+    "data_nascimento" TEXT NOT NULL,
     "peso_atual" DOUBLE PRECISION NOT NULL,
     "altura" DOUBLE PRECISION NOT NULL,
-    "objetivo" "ObjetivoPaciente" NOT NULL,
+    "objetivo" TEXT NOT NULL,
     "observacao" TEXT,
-    "status" "StatusPaciente" NOT NULL DEFAULT 'ATIVO',
+    "status" TEXT NOT NULL DEFAULT 'ATIVO',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "paciente_pkey" PRIMARY KEY ("id")
@@ -56,7 +44,7 @@ CREATE TABLE "consulta" (
     "id" SERIAL NOT NULL,
     "paciente_id" INTEGER NOT NULL,
     "data" TIMESTAMP(3) NOT NULL,
-    "status" "StatusConsulta" NOT NULL DEFAULT 'AGENDADA',
+    "status" TEXT NOT NULL DEFAULT 'AGENDADA',
     "observacao" TEXT,
 
     CONSTRAINT "consulta_pkey" PRIMARY KEY ("id")
@@ -78,7 +66,7 @@ CREATE TABLE "plano_alimentar" (
 CREATE TABLE "refeicao" (
     "id" SERIAL NOT NULL,
     "plano_id" INTEGER NOT NULL,
-    "tipo" "TipoRefeicao" NOT NULL,
+    "tipo" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
 
     CONSTRAINT "refeicao_pkey" PRIMARY KEY ("id")

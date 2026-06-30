@@ -5,16 +5,15 @@ interface EvolucaoInput {
     pacienteId: number
     peso: number
     percentualGordura: number
-    circunferenciaGordura: number
     circunferenciaAbdominal: number
     observacao?: string
 }
 
 export const registrarEvolucao = async (req: Request, res: Response) => {
     try {
-        const { pacienteId, peso, percentualGordura, circunferenciaGordura, circunferenciaAbdominal, observacao } = req.body as EvolucaoInput
+        const { pacienteId, peso, percentualGordura, circunferenciaAbdominal, observacao } = req.body as EvolucaoInput
 
-        if (!pacienteId || !peso || !percentualGordura || !circunferenciaAbdominal || !circunferenciaGordura) {
+        if (!pacienteId || !peso || !percentualGordura || !circunferenciaAbdominal ) {
             return res.status(400).json({
                 message: "Apenas o campo observação é opcional."
             })
@@ -25,7 +24,6 @@ export const registrarEvolucao = async (req: Request, res: Response) => {
                 pacienteId: Number(pacienteId),
                 peso,
                 percentualGordura,
-                circunferenciaGordura,
                 circunferenciaAbdominal,
                 observacao: observacao || ""
             }
