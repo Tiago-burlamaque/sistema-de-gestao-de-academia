@@ -4,7 +4,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import { MdDarkMode } from "react-icons/md";
 import { CiLight } from "react-icons/ci";
 import axios from 'axios';
-import logo from '../assets/images/progresso.png';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
@@ -55,9 +54,7 @@ function Login() {
     return (
         <section className={`min-h-screen transition-colors duration-500 ${themeBg} text-white poppins-regular`}>
             <nav className={`w-full h-20 rounded-b-2xl flex items-center justify-between px-8 shadow-2xl transition-all duration-500 ${navBg}`}>
-                <div className='w-40 flex items-center'>
-                    <img src={logo} alt="Logo" className='h-12 object-contain' />
-                </div>
+
                 <div>
                     <h1 className='text-xl md:text-3xl poppins-extrabold text-center'>Sistema de Gestão</h1>
                 </div>

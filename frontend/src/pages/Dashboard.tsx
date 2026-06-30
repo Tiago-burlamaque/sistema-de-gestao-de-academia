@@ -98,6 +98,8 @@ function Dashboard() {
 
     return (
         <section className={`min-h-screen ${themeBg}`}>
+            <ToastContainer position="top-right" autoClose={3000} theme={dark ? 'dark' : 'light'} />
+            
             <nav className={`w-full h-20 flex items-center justify-between px-8 shadow-md ${dark ? 'bg-slate-950' : 'bg-white border-b border-slate-200'}`}>
                 <h1 className='text-2xl poppins-extrabold text-purple-600'>GymGestão</h1>
                 <div className='flex items-center gap-4'>
@@ -168,11 +170,13 @@ function Dashboard() {
                             <h2 className='text-xl poppins-extrabold text-purple-500'>Cadastrar Novo Aluno</h2>
                             <button type="button" onClick={() => setShowModal(false)} className='text-slate-400 hover:text-red-500 text-xl cursor-pointer bg-transparent border-0'>&times;</button>
                         </header>
+                        
                         <form onSubmit={handleSalvarPaciente} className='flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-1'>
                             <div className='flex flex-col gap-1'>
                                 <label htmlFor="nome" className='text-xs poppins-bold text-slate-400'>Nome Completo</label>
                                 <input type="text" id="nome" value={formData.nome} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`} />
                             </div>
+                            
                             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                                 <div className='flex flex-col gap-1'>
                                     <label htmlFor="email" className='text-xs poppins-bold text-slate-400'>E-mail</label>
@@ -180,3 +184,54 @@ function Dashboard() {
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label htmlFor="telefone" className='text-xs poppins-bold text-slate-400'>Telefone</label>
+                                    <input type="text" id="telefone" value={formData.telefone} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`} />
+                                </div>
+                            </div>
+
+                            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="dataNascimento" className='text-xs poppins-bold text-slate-400'>Data de Nascimento</label>
+                                    <input type="date" id="dataNascimento" value={formData.dataNascimento} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="pesoAtual" className='text-xs poppins-bold text-slate-400'>Peso Atual (kg)</label>
+                                    <input type="number" step="0.1" id="pesoAtual" value={formData.pesoAtual} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="altura" className='text-xs poppins-bold text-slate-400'>Altura (m)</label>
+                                    <input type="number" step="0.01" id="altura" value={formData.altura} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`} />
+                                </div>
+                            </div>
+
+                            <div className='flex flex-col gap-1'>
+                                <label htmlFor="objetivo" className='text-xs poppins-bold text-slate-400'>Objetivo Principal</label>
+                                <select id="objetivo" value={formData.objetivo} onChange={handleInputChange} required className={`border rounded p-2 text-sm w-full focus:outline-none ${inputStyle}`}>
+                                    <option value="SAUDE">Saúde / Qualidade de Vida</option>
+                                    <option value="EMAGRECIMENTO">Emagrecimento</option>
+                                    <option value="HIPERTROFIA">Hipertrofia / Ganho de Massa</option>
+                                    <option value="PERFORMANCE">Performance Esportiva</option>
+                                </select>
+                            </div>
+
+                            <div className='flex flex-col gap-1'>
+                                <label htmlFor="observacao" className='text-xs poppins-bold text-slate-400'>Observações Médicas / Histórico (Opcional)</label>
+                                <textarea id="observacao" value={formData.observacao} onChange={handleInputChange} rows={3} className={`border rounded p-2 text-sm w-full focus:outline-none resize-none ${inputStyle}`} />
+                            </div>
+
+                            <div className='flex justify-end gap-3 pt-3 border-t border-slate-700/40 mt-2'>
+                                <button type="button" onClick={() => setShowModal(false)} className='px-4 py-2 bg-transparent text-slate-400 hover:text-slate-200 border-0 text-sm poppins-bold cursor-pointer'>
+                                    Cancelar
+                                </button>
+                                <button type="submit" className='px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm poppins-bold cursor-pointer border-0'>
+                                    Salvar Aluno
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+}
+
+export default Dashboard;
