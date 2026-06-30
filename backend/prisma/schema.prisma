@@ -1,19 +1,20 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = "postgresql://postgres:123456@localhost:5432/academia_db?schema=public"
 }
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   nome      String
-  email     String   @unique
+  email     String     @unique
   senha     String
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  pacientes Paciente[]
 
   @@map("usuario")
 }
@@ -30,10 +31,11 @@ model Paciente {
   observacao     String?
   status         String           @default("ATIVO")
   createdAt      DateTime         @default(now()) @map("created_at")
-
-  evolucoes Evolucao[]
-  consultas Consulta[]
-  planos    PlanoAlimentar[]
+  usuarioId      Int              @map("usuario_id")
+  consultas      Consulta[]
+  evolucoes      Evolucao[]
+  usuario        Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  planos         PlanoAlimentar[]
 
   @@map("paciente")
 }
@@ -46,8 +48,7 @@ model Evolucao {
   circunferenciaAbdominal Float?   @map("circunferencia_abdominal")
   dataRegistro            DateTime @default(now()) @map("data_registro")
   observacao              String?
-
-  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  paciente                Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
 
   @@map("evolucao")
 }
@@ -58,33 +59,30 @@ model Consulta {
   data       DateTime
   status     String   @default("AGENDADA")
   observacao String?
-
-  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  paciente   Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
 
   @@map("consulta")
 }
 
 model PlanoAlimentar {
-  id              Int     @id @default(autoincrement())
-  pacienteId      Int     @map("paciente_id")
-  nomePlano       String  @map("nome_plano")
-  caloriasDiarias Int     @map("calorias_diarias")
+  id              Int        @id @default(autoincrement())
+  pacienteId      Int        @map("paciente_id")
+  nomePlano       String     @map("nome_plano")
+  caloriasDiarias Int        @map("calorias_diarias")
   objetivo        String
   observacao      String?
-
-  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  refeicoes Refeicao[]
+  paciente        Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  refeicoes       Refeicao[]
 
   @@map("plano_alimentar")
 }
 
 model Refeicao {
-  id        Int    @id @default(autoincrement())
-  planoId   Int    @map("plano_id")
+  id        Int            @id @default(autoincrement())
+  planoId   Int            @map("plano_id")
   tipo      String
   descricao String
-
-  plano PlanoAlimentar @relation(fields: [planoId], references: [id], onDelete: Cascade)
+  plano     PlanoAlimentar @relation(fields: [planoId], references: [id], onDelete: Cascade)
 
   @@map("refeicao")
 }

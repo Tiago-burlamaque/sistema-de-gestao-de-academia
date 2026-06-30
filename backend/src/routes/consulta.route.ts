@@ -1,9 +1,8 @@
 import { Router } from "express";
+import { agendarConsulta, listarConsultasPorPaciente, alterarStatusConsulta } from "../controllers/consulta.controller";
 import { authToken } from "../middleware/middleware";
-import { agendarConsulta, atualizarStatus, listarConsultas } from "../controllers/consulta.controller";
 
 export const consultaRouter = Router()
-
-consultaRouter.post('/agendarConsulta', authToken, agendarConsulta)
-consultaRouter.get('/listarConsultas', authToken, listarConsultas)
-consultaRouter.patch('/atualizarStatus/:id', authToken, atualizarStatus)
+consultaRouter.post('/agendar', authToken, agendarConsulta)
+consultaRouter.get('/paciente/:pacienteId', authToken, listarConsultasPorPaciente)
+consultaRouter.patch('/status/:id', authToken, alterarStatusConsulta)
