@@ -35,7 +35,7 @@ function Cadastro() {
                 senha: senha
             });
             toast.success('Usuário criado com sucesso.');
-            setTimeout(() => navigate('/login'), 2000);
+            setTimeout(() => navigate('/'), 2000);
         } catch (error: any) {
             const status = error.response?.status;
             if (status === 400) return void toast.error("Preencha todos os campos corretamente.");
